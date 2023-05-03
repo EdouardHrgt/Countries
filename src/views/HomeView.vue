@@ -1,18 +1,11 @@
 <template>
   <div class="home">
-    <div class="home-page">
+    <div class="home-page" :class="{ dark: isDark }">
       <!-- HEADER -->
       <header>
         <nav>
           <h1>Where in the world?</h1>
-          <div class="dark-mode">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26">
-              <path
-                fill-rule="evenodd"
-                d="M13 0c.81 0 1.603.074 2.373.216C10.593 1.199 7 5.43 7 10.5 7 16.299 11.701 21 17.5 21c2.996 0 5.7-1.255 7.613-3.268C23.22 22.572 18.51 26 13 26 5.82 26 0 20.18 0 13S5.82 0 13 0z"
-              />
-            </svg>
-
+          <div class="dark-mode" @click="isDark = !isDark">
             <p>Dark Mode</p>
           </div>
         </nav>
@@ -24,7 +17,7 @@
           <div class="form-group">
             <label for="search-country" hidden>Search for a country...</label>
             <input
-              type="text"
+              type="search"
               placeholder="Search for a country"
               name="search-country"
               id="search-country"
@@ -79,6 +72,7 @@ export default {
       searchedRegion: '',
       countries: data,
       selectRegion: [],
+      isDark: false,
     };
   },
   created() {
@@ -92,51 +86,22 @@ export default {
   },
   computed: {
     filterCountries() {
-      const country = this.searchedCountry.toLowerCase();
-      const region = this.searchedRegion;
-      let array = this.countries;
-      if (region.length) {
-        array = this.countries.filter((country) => country.region == this.region);
+      if (this.searchedRegion.length) {
+        return this.countries.filter((country) => country.region == this.searchedRegion);
       }
-      if (country.length) {
-        //
+      if (this.searchedCountry.length) {
+        return this.countries.filter(
+          (country) => country.name.toLowerCase() == this.searchedCountry.toLowerCase()
+        );
+      } else {
+        return this.countries;
       }
-      return array;
     },
   },
 };
 </script>
 
 <style scoped>
-/*GLOBAL WIDTH*/
-.home-page {
-  margin: auto;
-  background-color: var(--clr-light-bg);
-  padding: 0 5vw;
-}
-
-header,
-form {
-  margin-bottom: 3.5rem;
-}
-
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.48rem 0;
-  box-shadow: 0 2px var(--clr-shadow);
-}
-
-.dark-mode {
-  display: flex;
-  align-items: center;
-}
-
-.dark-mode p {
-  margin-left: 0.5rem;
-}
-
 main {
   min-height: calc(100vh - 81px);
 }
@@ -156,19 +121,18 @@ form {
   width: 40%;
 }
 
-input[type='text'] {
+input[type='search'] {
   border: none;
   outline: none;
   box-shadow: 0px 2px 5px 1px var(--clr-shadow);
   font-size: var(--p-size);
-  color: var(--clr-dark-gray);
   padding: 1rem;
   width: 100%;
 }
 
-input[type='text']::placeholder {
+input[type='search']::placeholder {
   font-size: var(--p-size);
-  color: var(--clr-dark-gray);
+  font-weight: 600;
 }
 
 select {
@@ -181,7 +145,6 @@ select {
 /*COUNTRIES GRID */
 .grid {
   margin-top: 3rem;
-  min-height: 50vh;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(auto, 1fr);
@@ -196,6 +159,7 @@ select {
   box-shadow: 0px 0px 12px 2px var(--clr-shadow);
   cursor: pointer;
   transition: 0.3s;
+  max-height: 350px;
 }
 
 .country:hover {
@@ -214,7 +178,7 @@ select {
 }
 
 .country-infos {
-  padding: 1rem;
+  padding: 2rem 1rem;
 }
 
 .country-infos p {
@@ -229,7 +193,18 @@ select {
   color: var(--clr-dark-gray);
 }
 
-@media screen and (max-width: 1440px) {
+@media screen and (max-width: 1300px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    width: 80%;
+    margin: auto;
+  }
 }
 
 @media screen and (max-width: 800px) {
@@ -243,6 +218,16 @@ select {
   .form-group:nth-child(2) {
     text-align: start;
     margin-top: 2rem;
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+  }
+}
+@media screen and (max-width: 650px) {
+  .grid {
+    grid-template-columns: repeat(1, 1fr);
+    grid-row-gap: 2rem;
   }
 }
 </style>
